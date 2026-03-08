@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .youtube-text {
+            position: absolute;
+            top: 0;
+            right: min(348px, 29vw);
+            width: 468px;
+            font: "Neue Montreal";
+            font-weight: 400;
+            color: var(--light-0);
+            font-size: 27px;
+            line-height: 32.4px;
+            letter-spacing: 0.54px;
+        }
+
+        .youtube-link {
+            overflow: hidden;
+            position: relative;
+            color: var(--primary);
+        }
+        .youtube-link span {
+            color: var(--primary);
+        }
+
+        @media (max-width: 991px) {
+            .youtube-text {
+                right: min(264px, 29vw);
+                width: 330px;
+                font-size: 19px;
+                line-height: 22.8px;
+                letter-spacing: 0.38px;
+            }
+        }
+        @media (max-width: 479px) {
+            .youtube-text {
+                position: relative;
+                top: auto;
+                right: auto;
+                width: 170px;
+                font-size: 12px;
+                line-height: 14.4px;
+                letter-spacing: 0.24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <p class="youtube-text">(*)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;I have a <a class="youtube-link" href=""><span>Youtube</span></a> channel where I share my learning journey to become a creative web freelancer with getting clients, how to build brand from website...</p>
+</body>
+</html>
