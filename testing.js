@@ -7,7 +7,8 @@ const AppState = {
   waveState: { fill: -0.1 },
   tickerAdded: false,
   amplitudeTweens: [],
-  isTransitioning: false,        
+  isTransitioning: false,
+  isHistoryNavigation: false        
 };
 
 // ================================================
@@ -368,7 +369,7 @@ function initHomeAnimation() {
     .to(".preloader-box",   { height: "103vh", width: "103vw", borderRadius: "0px", duration: 1.3, delay: .88, ease: "hop" }, "<")
     .to(".canvas",          { scale: 50, duration: 1.3, ease: "hop" }, "<")
     .to(".preloader-box",   { clipPath: "inset(0% 0 100% 0)", duration: 1.5, ease: "hop" }, "<.88")
-    .to(".nav-bar",         { scale: 1, duration: .3, ease: "expo.in" }, "<.2")
+    .to(".nav-bar",         { pointerEvents: "auto", scale: 1, duration: .3, ease: "expo.in" }, "<.2")
     .to(".round-intro", {
       scale: 1, rotate: 360, delay: .3, duration: 1.2, ease: "circle.inOut",
       onComplete: () => gsap.to(".round-intro", { rotate: "-=360", duration: 16, ease: "none", repeat: -1 })
@@ -437,7 +438,9 @@ function pageTransition(data) {
 
   gsap.killTweensOf(".page-transition");   
 
-  const tl = gsap.timeline();
+  const tl = gsap.timeline({
+    defaults: { overwrite: "auto" }
+  });
 
   tl
     .to(".page-transition", {
@@ -459,7 +462,13 @@ function pageTransition(data) {
     }, "<")
     .to(".page-transition",   { height: "101vh", width: "101vw", borderRadius: "0px", duration: 1.3, delay: .85, ease: "hop" }, "<")
     .to(".transition-canvas", { scale: 50, duration: 1.3, ease: "hop" }, "<")
-    .to(".page-transition",   { clipPath: "inset(0% 0 100% 0)", duration: 1.5, ease: "hop" }, "<1.1")
+    .to(".nav-bar", { pointerEvents: "none", duration: .1 }, "<")
+    .to(".page-transition",   { 
+      clipPath: "inset(0% 0 100% 0)", 
+      duration: 1.5, 
+      ease: "hop", 
+      onComplete: () => {gsap.set(".nav-bar", { pointerEvents: "auto" })} 
+    }, "<1.1")
     .set(".page-transition", {
       top: "50%",
       borderRadius: "",
@@ -467,22 +476,14 @@ function pageTransition(data) {
       height: "",
       opacity: 0,
       scale: 0,
-      clipPath: "inset(0% 0)"
+      clipPath: "inset(0% 0)",
     })
     .set(".transition-canvas", {
       scale: 1,
       borderRadius: "",
     })
     .set(".page-name", { top: "" })
-    .to(AppState.waveState, {
-      fill: 0.1,
-      duration: 1.8,
-      ease: "expo.inOut",
-      onUpdate: () => setWaveFillFor(".transition-canvas", AppState.waveState.fill),
-      onComplete: () => {
-        AppState.isTransitioning = false;    
-      }
-    })
+    setWaveFillFor(".transition-canvas", AppState.waveState.fill);
   }
 }
 
@@ -505,6 +506,14 @@ function delay(n) {
   });
 }
 
+window.addEventListener("popstate", () => {
+  AppState.isHistoryNavigation = true;
+});
+
+window.addEventListener("beforeunload", () => {
+  AppState.isHistoryNavigation = true;
+});
+
 barba.init({
   sync: true,
 
@@ -514,6 +523,12 @@ barba.init({
 
       async leave(data) {
         const done = this.async();
+
+        if (AppState.isHistoryNavigation) {
+          done();
+          return;
+        }
+
         pageTransition(data);
         await delay(screenWidth < 992 ? 800 : 2200);
         done();
@@ -537,6 +552,13 @@ barba.init({
       }
     }
   ]
+});
+
+barba.hooks.after(() => {
+  setTimeout(() => {
+    AppState.isTransitioning = false;
+    AppState.isHistoryNavigation = false;
+  }, 200)
 });
 
 // ================================================
@@ -568,7 +590,7 @@ function initHoverPreview() {
         opacity: 0.8,
         scale: 1,
         duration: 0.6,
-        ease: "expo.out"
+        ease: "expo.out",
       });
     });
 
@@ -586,6 +608,7 @@ function initHoverPreview() {
     });
   });
 }
+
 
 // ================================================
 // BOOT

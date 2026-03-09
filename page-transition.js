@@ -7,7 +7,8 @@ const AppState = {
   waveState: { fill: -0.1 },
   tickerAdded: false,
   amplitudeTweens: [],
-  isTransitioning: false,         // 🆕 THÊM VÀO ĐÂY — cùng chỗ với các state khác
+  isTransitioning: false,
+  isHistoryNavigation: false        
 };
 
 // ================================================
@@ -220,7 +221,6 @@ function createWave(ctx, options = {}) {
 // ================================================
 // NAV
 // ================================================
-
 function initStagger() {
   const staggerLinks = document.querySelectorAll("[stagger-link]");
 
@@ -343,7 +343,9 @@ function initNav() {
 // ================================================
 // HOME ENTRANCE ANIMATION
 // ================================================
+
 CustomEase.create("hop", ".8, 0, 0.1, 1");
+
 function setHomeEndState(container) {
   if (screenWidth < 992) {
     gsap.set(container, { opacity: 0 })
@@ -394,7 +396,9 @@ function pageTransition(data) {
 
   gsap.killTweensOf(".page-transition");   
 
-  const tl = gsap.timeline();
+  const tl = gsap.timeline({
+    defaults: { overwrite: "auto" }
+  });
 
   tl
     .to(".page-transition", {
@@ -416,7 +420,13 @@ function pageTransition(data) {
     }, "<")
     .to(".page-transition",   { height: "101vh", width: "101vw", borderRadius: "0px", duration: 1.3, delay: .85, ease: "hop" }, "<")
     .to(".transition-canvas", { scale: 50, duration: 1.3, ease: "hop" }, "<")
-    .to(".page-transition",   { clipPath: "inset(0% 0 100% 0)", duration: 1.5, ease: "hop" }, "<1.1")
+    .to(".nav-bar", { pointerEvents: "none", duration: .1 }, "<")
+    .to(".page-transition",   { 
+      clipPath: "inset(0% 0 100% 0)", 
+      duration: 1.5, 
+      ease: "hop", 
+      onComplete: () => {gsap.set(".nav-bar", { pointerEvents: "auto" })} 
+    }, "<1.1")
     .set(".page-transition", {
       top: "50%",
       borderRadius: "",
@@ -424,22 +434,14 @@ function pageTransition(data) {
       height: "",
       opacity: 0,
       scale: 0,
-      clipPath: "inset(0% 0)"
+      clipPath: "inset(0% 0)",
     })
     .set(".transition-canvas", {
       scale: 1,
       borderRadius: "",
     })
     .set(".page-name", { top: "" })
-    .to(AppState.waveState, {
-      fill: 0.1,
-      duration: 1.8,
-      ease: "expo.inOut",
-      onUpdate: () => setWaveFillFor(".transition-canvas", AppState.waveState.fill),
-      onComplete: () => {
-        AppState.isTransitioning = false;    
-      }
-    })
+    setWaveFillFor(".transition-canvas", AppState.waveState.fill);
   }
 }
 
@@ -462,6 +464,14 @@ function delay(n) {
   });
 }
 
+window.addEventListener("popstate", () => {
+  AppState.isHistoryNavigation = true;
+});
+
+window.addEventListener("beforeunload", () => {
+  AppState.isHistoryNavigation = true;
+});
+
 barba.init({
   sync: true,
 
@@ -471,6 +481,12 @@ barba.init({
 
       async leave(data) {
         const done = this.async();
+
+        if (AppState.isHistoryNavigation) {
+          done();
+          return;
+        }
+
         pageTransition(data);
         await delay(screenWidth < 992 ? 800 : 2200);
         done();
@@ -479,6 +495,7 @@ barba.init({
       async beforeEnter(data) {
         if (screenWidth < 992 && data.next.namespace === 'home') {
           setHomeEndState(data.next.container);
+          gsap.set(".nav-bar", { pointerEvents: "none" })
         }
       },
 
@@ -496,8 +513,15 @@ barba.init({
   ]
 });
 
+barba.hooks.after(() => {
+  setTimeout(() => {
+    AppState.isTransitioning = false;
+    AppState.isHistoryNavigation = false;
+  }, 200)
+});
+
 // ================================================
-// HOVER PREVIEW                     🔄 CẬP NHẬT
+// HOVER PREVIEW                     
 // ================================================
 
 function initHoverPreview() {
@@ -525,7 +549,7 @@ function initHoverPreview() {
         opacity: 0.8,
         scale: 1,
         duration: 0.6,
-        ease: "expo.out"
+        ease: "expo.out",
       });
     });
 
