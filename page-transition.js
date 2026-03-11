@@ -8,7 +8,8 @@ const AppState = {
   tickerAdded: false,
   amplitudeTweens: [],
   isTransitioning: false,
-  isHistoryNavigation: false        
+  isHistoryNavigation: false,  
+  isPreloading: false,    
 };
 
 // ================================================
@@ -222,6 +223,7 @@ function createWave(ctx, options = {}) {
 // NAV
 // ================================================
 function initStagger() {
+  if (screenWidth < 992) return;
   const staggerLinks = document.querySelectorAll("[stagger-link]");
 
   staggerLinks.forEach(el => {
@@ -325,7 +327,7 @@ function initNav() {
     const w = window.innerWidth;
     let heroMembrane = hero ? hero.querySelector(".hero-membrane") : null;
 
-    if (w < 992) {
+    if (w < 992 && AppState.isPreloading === false) {
       gsap.to(toggleButton, { scale: 1, duration: .5, ease: "expo.out" });
       if (hero && !heroMembrane) {
         heroMembrane = document.createElement('div');
@@ -345,6 +347,52 @@ function initNav() {
 // ================================================
 
 CustomEase.create("hop", ".8, 0, 0.1, 1");
+function initHomeAnimation() {
+  const screenWidth = window.innerWidth;
+  AppState.isPreloading = true,
+  gsap.set(".h1-text", { top: "150%" });
+  gsap.set(".toggle-button", { scale: 0 });
+  
+
+  const tl1 = gsap.timeline();
+
+  tl1
+    .to(AppState.waveState, {
+      fill: 0.1,
+      duration: 1.5,
+      ease: "expo.inOut",
+      onUpdate: () => setWaveFillFor(".canvas", AppState.waveState.fill)
+    })
+    .to(".text", { bottom: "0",    duration: 1.5, ease: "expo.inOut" }, "<")
+    .to(".text", { bottom: "100%", duration: 1.5, delay: .4, ease: "expo.inOut" })
+    .to(AppState.waveState, {
+      fill: 1.2,
+      duration: 1.8,
+      ease: "expo.inOut",
+      onUpdate: () => setWaveFillFor(".canvas", AppState.waveState.fill)
+    }, "<")
+    .to(".preloader-box",   { height: "103vh", width: "103vw", borderRadius: "0px", duration: 1.3, delay: .88, ease: "hop" }, "<")
+    .to(".canvas",          { scale: 50, duration: 1.3, ease: "hop" }, "<")
+    .to(".preloader-box",   { clipPath: "inset(0% 0 100% 0)", duration: 1.5, ease: "hop" }, "<.88")
+    .to(".toggle-button",   { scale: screenWidth < 992  ? 1 : 0, duration: .1, onComplete: () => {AppState.isPreloading = false}}, "<")
+    .to(".nav-bar",         { pointerEvents: "auto", scale: 1, duration: .3, ease: "expo.in" }, "<.2")
+    .to(".round-intro", {
+      scale: 1, rotate: 360, delay: .3, duration: 1.2, ease: "circle.inOut",
+      onComplete: () => gsap.to(".round-intro", { rotate: "-=360", duration: 16, ease: "none", repeat: -1 })
+    }, "<")
+    .to(".round-logo", {
+      scale: 1, rotate: -360, duration: 1.2, ease: "circle.inOut",
+      onComplete: () => gsap.to(".round-logo", { rotate: "+=360", duration: 90, ease: "none", repeat: -1 })
+    }, "<")
+    .to(".h1-text", {
+      top: screenWidth > 991 ? "40%" : screenWidth > 500 ? "22%" : "20%",
+      delay: .1, duration: 1.2, ease: "expo.out",
+      stagger: { each: 0.05, from: "center" }
+    }, "<")
+    .to(".bac-link-text", { top: "0%", duration: 1,  delay: .5, ease: "power2.out" }, "<")
+    .to(".bac-text",      { top: "0%", duration: .8, delay: .1, ease: "power4.out" }, "<")
+    .to(".location-text", { top: "0%", duration: .8, delay: .1, ease: "power4.out" }, "<")
+}
 
 function setHomeEndState(container) {
   if (screenWidth < 992) {
@@ -360,7 +408,6 @@ function setHomeEndState(container) {
   gsap.set(".round-intro",   { scale: 1 });
   gsap.set(".round-logo",    { scale: 1 });
 
-  // Restart rotate animations nếu chưa chạy
   gsap.to(".round-intro", { rotate: "-=360", duration: 16, ease: "none", repeat: -1 });
   gsap.to(".round-logo",  { rotate: "+=360", duration: 90, ease: "none", repeat: -1 });
   initStagger();
@@ -391,57 +438,57 @@ function pageTransition(data) {
     gsap.to(`.${data.current.namespace}-container`, { opacity: 0, duration: .8, ease: "expo.inOut" });
   } else {
     AppState.isTransitioning = true;          
-  AppState.waveState.fill = 0.1;
-  setWaveFillFor(".transition-canvas", 0.1);
+    AppState.waveState.fill = 0.1;
+    setWaveFillFor(".transition-canvas", 0.1);
 
-  gsap.killTweensOf(".page-transition");   
+    gsap.killTweensOf(".page-transition");   
 
-  const tl = gsap.timeline({
-    defaults: { overwrite: "auto" }
-  });
+    const tl = gsap.timeline({
+      defaults: { overwrite: "auto" }
+    });
 
-  tl
-    .to(".page-transition", {
-      opacity: 1,
-      scale: 1,                           
-      duration: 0.3,
-      ease: "expo.out"
-    })
-    .to(".page-name", {
-      top: "-100%",
-      duration: 1.5,
-      ease: "expo.inOut"
-    })
-    .to(AppState.waveState, {
-      fill: 1.2,
-      duration: 1.8,
-      ease: "expo.inOut",
-      onUpdate: () => setWaveFillFor(".transition-canvas", AppState.waveState.fill)
-    }, "<")
-    .to(".page-transition",   { height: "101vh", width: "101vw", borderRadius: "0px", duration: 1.3, delay: .85, ease: "hop" }, "<")
-    .to(".transition-canvas", { scale: 50, duration: 1.3, ease: "hop" }, "<")
-    .to(".nav-bar", { pointerEvents: "none", duration: .1 }, "<")
-    .to(".page-transition",   { 
-      clipPath: "inset(0% 0 100% 0)", 
-      duration: 1.5, 
-      ease: "hop", 
-      onComplete: () => {gsap.set(".nav-bar", { pointerEvents: "auto" })} 
-    }, "<1.1")
-    .set(".page-transition", {
-      top: "50%",
-      borderRadius: "",
-      width: "",
-      height: "",
-      opacity: 0,
-      scale: 0,
-      clipPath: "inset(0% 0)",
-    })
-    .set(".transition-canvas", {
-      scale: 1,
-      borderRadius: "",
-    })
-    .set(".page-name", { top: "" })
-    setWaveFillFor(".transition-canvas", AppState.waveState.fill);
+    tl
+      .to(".page-transition", {
+        opacity: 1,
+        scale: 1,                           
+        duration: 0.3,
+        ease: "expo.out"
+      })
+      .to(".page-name", {
+        top: "-100%",
+        duration: 1.5,
+        ease: "expo.inOut"
+      })
+      .to(AppState.waveState, {
+        fill: 1.2,
+        duration: 1.8,
+        ease: "expo.inOut",
+        onUpdate: () => setWaveFillFor(".transition-canvas", AppState.waveState.fill)
+      }, "<")
+      .to(".page-transition",   { height: "101vh", width: "101vw", borderRadius: "0px", duration: 1.3, delay: .85, ease: "hop" }, "<")
+      .to(".transition-canvas", { scale: 50, duration: 1.3, ease: "hop" }, "<")
+      .to(".nav-bar", { pointerEvents: "none", duration: .1 }, "<")
+      .to(".page-transition",   { 
+        clipPath: "inset(0% 0 100% 0)", 
+        duration: 1.5, 
+        ease: "hop", 
+        onComplete: () => {gsap.set(".nav-bar", { pointerEvents: "auto" })} 
+      }, "<1.1")
+      .set(".page-transition", {
+        top: "50%",
+        borderRadius: "",
+        width: "",
+        height: "",
+        opacity: 0,
+        scale: 0,
+        clipPath: "inset(0% 0)",
+      })
+      .set(".transition-canvas", {
+        scale: 1,
+        borderRadius: "",
+      })
+      .set(".page-name", { top: "" })
+      setWaveFillFor(".transition-canvas", AppState.waveState.fill);
   }
 }
 
@@ -495,7 +542,6 @@ barba.init({
       async beforeEnter(data) {
         if (screenWidth < 992 && data.next.namespace === 'home') {
           setHomeEndState(data.next.container);
-          gsap.set(".nav-bar", { pointerEvents: "none" })
         }
       },
 
@@ -568,15 +614,47 @@ function initHoverPreview() {
   });
 }
 
+
 // ================================================
 // BOOT
 // ================================================
 
 initAllWaves();
 
-document.addEventListener("DOMContentLoaded", () => {
-  initNav();
-  initHoverPreview();
+window.addEventListener("load", () => {
+  const navEntry = performance.getEntriesByType("navigation")[0];
+  
+  if (navEntry.type === "reload") {
+    const currentContainer = document.querySelector('[data-barba="container"]');
+    const namespace = currentContainer?.dataset.barbaNamespace;
+
+    if (namespace === 'home') {
+      gsap.set(".nav-bar", { scale: 0 });
+      gsap.set(".round-logo", { transform: "translate(-50%, -50%) !important" });
+      initHomeAnimation();
+    } else {
+      gsap.set(".nav-bar", { scale: 1, pointerEvents: "auto" });
+      initStagger();
+    }
+
+    initNav();
+    initHoverPreview();
+    initAllWaves();
+  } else {
+    const currentContainer = document.querySelector('[data-barba="container"]');
+    const namespace = currentContainer?.dataset.barbaNamespace;
+
+    if (namespace === 'home') {
+      gsap.set(".nav-bar", { scale: 0 });
+      gsap.set(".round-logo", { transform: "translate(-50%, -50%) !important" });
+      initHomeAnimation();
+    } else {
+      gsap.set(".nav-bar", { scale: 1, pointerEvents: "auto" });
+      initStagger();
+    }
+    initNav();
+    initHoverPreview();
+  }
 
   document.querySelectorAll("[data-barba-link]").forEach(link => {
     link.addEventListener("click", (e) => {
