@@ -8,8 +8,8 @@ const AppState = {
   tickerAdded: false,
   amplitudeTweens: [],
   isTransitioning: false,
-  isHistoryNavigation: false,  
-  isPreloading: false,    
+  isHistoryNavigation: false,
+  isPreloading: false,
 };
 
 // ================================================
@@ -222,6 +222,7 @@ function createWave(ctx, options = {}) {
 // ================================================
 // NAV
 // ================================================
+
 function initStagger() {
   if (screenWidth < 992) return;
   const staggerLinks = document.querySelectorAll("[stagger-link]");
@@ -246,13 +247,13 @@ function initStagger() {
 }
 
 function initNav() {
-  const toggleButton      = document.querySelector(".toggle-button");
-  const menu              = document.querySelector(".menu");
-  const iconBars          = document.querySelector(".icon-bars");
-  const bar1              = document.querySelector(".bar-1");
-  const bar2              = document.querySelector(".bar-2");
-  const bar3              = document.querySelector(".bar-3");
-  const hero              = document.querySelector(".hero-section");
+  const toggleButton = document.querySelector(".toggle-button");
+  const menu         = document.querySelector(".menu");
+  const iconBars     = document.querySelector(".icon-bars");
+  const bar1         = document.querySelector(".bar-1");
+  const bar2         = document.querySelector(".bar-2");
+  const bar3         = document.querySelector(".bar-3");
+  const hero         = document.querySelector(".hero-section");
 
   if (!toggleButton) return;
 
@@ -265,12 +266,12 @@ function initNav() {
   function openMenu() {
     const topValue = (iconBars.offsetHeight - bar1.offsetHeight) / 2;
     tl2.clear()
-      .to(".menu",    { right: "0", duration: 1.2, ease: "power4.out" }, "<")
-      .to(bar1,       { rotation: 45,  top: topValue,    duration: 0.4, ease: "power3.inOut" }, "<")
-      .to(bar2,       { rotation: 90,                    duration: 0.4, ease: "power3.inOut" }, "<")
-      .to(bar3,       { rotation: -45, bottom: topValue, duration: 0.4, ease: "power3.inOut" }, "<")
-      .to(".circle-1",{ scale: 1, duration: .6, ease: "back.out(1.8)", delay: .5 }, "<")
-      .to(".circle-2",{ scale: 1, duration: .6, ease: "back.out(1.8)" }, "<")
+      .to(".menu",     { right: "0", duration: 1.2, ease: "power4.out" }, "<")
+      .to(bar1,        { rotation: 45,  top: topValue,    duration: 0.4, ease: "power3.inOut" }, "<")
+      .to(bar2,        { rotation: 90,                    duration: 0.4, ease: "power3.inOut" }, "<")
+      .to(bar3,        { rotation: -45, bottom: topValue, duration: 0.4, ease: "power3.inOut" }, "<")
+      .to(".circle-1", { scale: 1, duration: .6, ease: "back.out(1.8)", delay: .5 }, "<")
+      .to(".circle-2", { scale: 1, duration: .6, ease: "back.out(1.8)" }, "<")
       .restart();
   }
 
@@ -318,7 +319,7 @@ function initNav() {
   toggleMenuButton();
 
   let resizeTimer;
-  window.addEventListener("resize", function() {
+  window.addEventListener("resize", function () {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(toggleMenuButton, 100);
   });
@@ -343,16 +344,15 @@ function initNav() {
 }
 
 // ================================================
-// HOME ENTRANCE ANIMATION
+// HOME ANIMATION
 // ================================================
 
 CustomEase.create("hop", ".8, 0, 0.1, 1");
+
 function initHomeAnimation() {
-  const screenWidth = window.innerWidth;
-  AppState.isPreloading = true,
+  AppState.isPreloading = true;
   gsap.set(".h1-text", { top: "150%" });
   gsap.set(".toggle-button", { scale: 0 });
-  
 
   const tl1 = gsap.timeline();
 
@@ -374,7 +374,7 @@ function initHomeAnimation() {
     .to(".preloader-box",   { height: "103vh", width: "103vw", borderRadius: "0px", duration: 1.3, delay: .88, ease: "hop" }, "<")
     .to(".canvas",          { scale: 50, duration: 1.3, ease: "hop" }, "<")
     .to(".preloader-box",   { clipPath: "inset(0% 0 100% 0)", duration: 1.5, ease: "hop" }, "<.88")
-    .to(".toggle-button",   { scale: screenWidth < 992  ? 1 : 0, duration: .1, onComplete: () => {AppState.isPreloading = false}}, "<")
+    .to(".toggle-button",   { scale: screenWidth < 992 ? 1 : 0, duration: .1, onComplete: () => { AppState.isPreloading = false; } }, "<")
     .to(".nav-bar",         { pointerEvents: "auto", scale: 1, duration: .3, ease: "expo.in" }, "<.2")
     .to(".round-intro", {
       scale: 1, rotate: 360, delay: .3, duration: 1.2, ease: "circle.inOut",
@@ -391,12 +391,12 @@ function initHomeAnimation() {
     }, "<")
     .to(".bac-link-text", { top: "0%", duration: 1,  delay: .5, ease: "power2.out" }, "<")
     .to(".bac-text",      { top: "0%", duration: .8, delay: .1, ease: "power4.out" }, "<")
-    .to(".location-text", { top: "0%", duration: .8, delay: .1, ease: "power4.out" }, "<")
+    .to(".location-text", { top: "0%", duration: .8, delay: .1, ease: "power4.out" }, "<");
 }
 
 function setHomeEndState(container) {
   if (screenWidth < 992) {
-    gsap.set(container, { opacity: 0 })
+    gsap.set(container, { opacity: 0 });
   }
   gsap.set(".h1-text", {
     top: screenWidth > 991 ? "40%" : screenWidth > 500 ? "22%" : "20%"
@@ -406,11 +406,166 @@ function setHomeEndState(container) {
   gsap.set(".location-text", { top: "0%" });
   gsap.set(".nav-bar",       { scale: 1 });
   gsap.set(".round-intro",   { scale: 1 });
-  gsap.set(".round-logo",    { scale: 1 });
+  gsap.set(".round-logo",    { scale: 1, transform: "translate(-50%,-50%)" });
 
   gsap.to(".round-intro", { rotate: "-=360", duration: 16, ease: "none", repeat: -1 });
   gsap.to(".round-logo",  { rotate: "+=360", duration: 90, ease: "none", repeat: -1 });
   initStagger();
+}
+
+// ================================================
+// SERVICE ANIMATION
+// ================================================
+
+let _serviceRafId = null;
+let imageLinks = [
+  "https://cdn.prod.website-files.com/6919398f2c0874354a666361/69b2d965589829976aafe344_process1%20(1).png",
+  "https://cdn.prod.website-files.com/6919398f2c0874354a666361/69b2d9dfcabcec4037988781_process2%20(1).png",
+  "https://cdn.prod.website-files.com/6919398f2c0874354a666361/69b2d9e2d9de01bcee2f6d07_process3%20(1).png"
+];
+
+function preloadImages(urls) {
+  urls.forEach(url => {
+    const img = new Image();
+    img.src = url;
+  });
+}
+
+preloadImages(imageLinks);
+ 
+function destroyServiceAnimation() {
+  if (_serviceRafId) {
+    cancelAnimationFrame(_serviceRafId);
+    _serviceRafId = null;
+  }
+  if (window._serviceAbortController) {
+    window._serviceAbortController.abort();
+    window._serviceAbortController = null;
+  }
+}
+ 
+function initServiceAnimation() {
+  const hoverCursorStart    = document.querySelector(".hover-cursor-start");
+  const hoverCursorImages   = document.querySelector(".hover-cursor-images");
+  const navBar              = document.querySelector(".nav-bar");
+  const hoverImage          = document.querySelector(".hover-image");
+  const serviceTitles       = document.querySelectorAll(".service-title");
+  const serviceDescriptions = document.querySelectorAll(".service-description");
+ 
+  if (!hoverCursorStart || !navBar) return;
+ 
+  destroyServiceAnimation();
+  
+  if (screenWidth >= 992) {
+    window._serviceAbortController = new AbortController();
+    const signal = window._serviceAbortController.signal;
+  
+    let mouseX = 0, mouseY = 0;
+    let curX   = 0, curY   = 0;
+  
+    document.addEventListener('pointermove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    }, { signal });
+    
+    navBar.addEventListener('mouseenter', () => {
+      gsap.to(".service-container", { cursor: "auto", duration: .5, ease: "expo.out", overwrite: true });
+      gsap.to(hoverCursorStart,     { scale: 0,       duration: .5, ease: "expo.out", overwrite: true });
+    }, { signal });
+  
+    navBar.addEventListener('mouseleave', () => {
+      gsap.to(".service-container", { cursor: "none", duration: .5, ease: "expo.out", overwrite: true });
+      gsap.to(hoverCursorStart,     { scale: 1,       duration: .5, ease: "expo.out", overwrite: true });
+    }, { signal });
+  
+    serviceTitles.forEach((title, index) => {
+      title.addEventListener("mouseenter", () => {
+        hoverImage.src = imageLinks[index];
+        gsap.to(hoverImage,           { scale: 1,   duration: .8, ease: "expo.out", overwrite: true });
+        gsap.to(".hover-cursor-text", { scale: 0,   duration: .8, ease: "expo.out", overwrite: true });
+        gsap.to(title.querySelector(".service-number"), { opacity: .3, duration: .8, ease: "expo.out", overwrite: true });
+        if (serviceDescriptions[index]) {
+          gsap.to(serviceDescriptions[index], { opacity: 1, duration: .8, ease: "expo.out", overwrite: true });
+        }
+      }, { signal });
+  
+      title.addEventListener("mouseleave", () => {
+        gsap.to(hoverImage,           { scale: 0,   duration: .8, ease: "expo.out", overwrite: true });
+        gsap.to(".hover-cursor-text", { scale: 1,   duration: .8, ease: "expo.out", overwrite: true });
+        gsap.to(title.querySelector(".service-number"), { opacity: .05, duration: .8, ease: "expo.out", overwrite: true });
+        if (serviceDescriptions[index]) {
+          gsap.to(serviceDescriptions[index], { opacity: .4, duration: .8, ease: "expo.out", overwrite: true });
+        }
+      }, { signal });
+    });
+  
+    function animate() {
+      curX += (mouseX - curX) * 0.15;
+      curY += (mouseY - curY) * 0.15;
+      hoverCursorStart.style.left = curX + 'px';
+      hoverCursorStart.style.top  = curY + 'px';
+      if (hoverCursorImages) {
+        hoverCursorImages.style.left = (screenWidth >= 1356 ? curX - 600 : curX - 300) + 'px';
+        hoverCursorImages.style.top  = curY + 'px';
+      }
+      _serviceRafId = requestAnimationFrame(animate);
+    }
+    animate();
+  } else {
+    window._serviceAbortController = new AbortController();
+    const signal = window._serviceAbortController.signal;
+
+    // Active title đầu tiên khi mới tải
+    if (serviceTitles.length > 0) {
+      hoverImage.src = imageLinks[0];
+      gsap.set(hoverImage, { scale: 1 });
+      gsap.set(".hover-cursor-text", { scale: 0 });
+      gsap.set(serviceTitles[0].querySelector(".service-number"), { opacity: .3 });
+      if (serviceDescriptions[0]) {
+        gsap.set(serviceDescriptions[0], { opacity: 1 });
+      }
+    }
+
+    let activeIndex = 0;
+
+    serviceTitles.forEach((title, index) => {
+      title.addEventListener("click", () => {
+        if (activeIndex === index) return;
+
+        // Reset title cũ
+        gsap.to(serviceTitles[activeIndex].querySelector(".service-number"), { opacity: .05, duration: .8, ease: "expo.out", overwrite: true });
+        if (serviceDescriptions[activeIndex]) {
+          gsap.to(serviceDescriptions[activeIndex], { opacity: .4, duration: .8, ease: "expo.out", overwrite: true });
+        }
+
+        // Active title mới
+        activeIndex = index;
+        hoverImage.src = imageLinks[index];
+        gsap.to(hoverImage,           { scale: 1,   duration: .8, ease: "expo.out", overwrite: true });
+        gsap.to(".hover-cursor-text", { scale: 0,   duration: .8, ease: "expo.out", overwrite: true });
+        gsap.to(title.querySelector(".service-number"), { opacity: .3, duration: .8, ease: "expo.out", overwrite: true });
+        if (serviceDescriptions[index]) {
+          gsap.to(serviceDescriptions[index], { opacity: 1, duration: .8, ease: "expo.out", overwrite: true });
+        }
+      }, { signal });
+    });
+  }
+  
+}
+
+// ================================================
+// PAGE-SPECIFIC ANIMATION DISPATCHER
+// ================================================
+
+function runPageAnimation(namespace) {
+  const handlerName = `init${capitalize(namespace)}Animation`;
+  if (typeof window[handlerName] === 'function') {
+    window[handlerName]();
+  }
+}
+
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 // ================================================
@@ -419,7 +574,7 @@ function setHomeEndState(container) {
 
 let _currentBreakpoint = getCurrentBreakpoint(window.innerWidth);
 
-window.addEventListener('resize', function() {
+window.addEventListener('resize', function () {
   const newBreakpoint = getCurrentBreakpoint(window.innerWidth);
   if (newBreakpoint !== _currentBreakpoint) {
     _currentBreakpoint = newBreakpoint;
@@ -430,18 +585,18 @@ window.addEventListener('resize', function() {
 });
 
 // ================================================
-// PAGE TRANSITION                   
+// PAGE TRANSITION
 // ================================================
 
 function pageTransition(data) {
   if (screenWidth < 992) {
     gsap.to(`.${data.current.namespace}-container`, { opacity: 0, duration: .8, ease: "expo.inOut" });
   } else {
-    AppState.isTransitioning = true;          
+    AppState.isTransitioning = true;
     AppState.waveState.fill = 0.1;
     setWaveFillFor(".transition-canvas", 0.1);
 
-    gsap.killTweensOf(".page-transition");   
+    gsap.killTweensOf(".page-transition");
 
     const tl = gsap.timeline({
       defaults: { overwrite: "auto" }
@@ -450,7 +605,7 @@ function pageTransition(data) {
     tl
       .to(".page-transition", {
         opacity: 1,
-        scale: 1,                           
+        scale: 1,
         duration: 0.3,
         ease: "expo.out"
       })
@@ -467,12 +622,12 @@ function pageTransition(data) {
       }, "<")
       .to(".page-transition",   { height: "101vh", width: "101vw", borderRadius: "0px", duration: 1.3, delay: .85, ease: "hop" }, "<")
       .to(".transition-canvas", { scale: 50, duration: 1.3, ease: "hop" }, "<")
-      .to(".nav-bar", { pointerEvents: "none", duration: .1 }, "<")
-      .to(".page-transition",   { 
-        clipPath: "inset(0% 0 100% 0)", 
-        duration: 1.5, 
-        ease: "hop", 
-        onComplete: () => {gsap.set(".nav-bar", { pointerEvents: "auto" })} 
+      .to(".nav-bar",           { pointerEvents: "none", duration: .1 }, "<")
+      .to(".page-transition",   {
+        clipPath: "inset(0% 0 100% 0)",
+        duration: 1.5,
+        ease: "hop",
+        onComplete: () => { gsap.set(".nav-bar", { pointerEvents: "auto" }); }
       }, "<1.1")
       .set(".page-transition", {
         top: "50%",
@@ -483,17 +638,15 @@ function pageTransition(data) {
         scale: 0,
         clipPath: "inset(0% 0)",
       })
-      .set(".transition-canvas", {
-        scale: 1,
-        borderRadius: "",
-      })
-      .set(".page-name", { top: "" })
-      setWaveFillFor(".transition-canvas", AppState.waveState.fill);
+      .set(".transition-canvas", { scale: 1, borderRadius: "" })
+      .set(".page-name", { top: "" });
+
+    setWaveFillFor(".transition-canvas", AppState.waveState.fill);
   }
 }
 
 // ================================================
-// BARBA.JS SETUP                    
+// CONTENT ANIMATION
 // ================================================
 
 function contentAnimation(data) {
@@ -511,13 +664,12 @@ function delay(n) {
   });
 }
 
-window.addEventListener("popstate", () => {
-  AppState.isHistoryNavigation = true;
-});
+// ================================================
+// BARBA.JS — chỉ init một lần duy nhất
+// ================================================
 
-window.addEventListener("beforeunload", () => {
-  AppState.isHistoryNavigation = true;
-});
+window.addEventListener("popstate",    () => { AppState.isHistoryNavigation = true; });
+window.addEventListener("beforeunload",() => { AppState.isHistoryNavigation = true; });
 
 barba.init({
   sync: true,
@@ -527,6 +679,7 @@ barba.init({
       name: 'default-transition',
 
       async leave(data) {
+        if (data.current.namespace === 'service') destroyServiceAnimation();
         const done = this.async();
 
         if (AppState.isHistoryNavigation) {
@@ -545,7 +698,7 @@ barba.init({
         }
       },
 
-      async enter(data) { 
+      async enter(data) {
         if (data.next.namespace === 'home' && screenWidth >= 992) {
           setHomeEndState(data.next.container);
         }
@@ -559,15 +712,18 @@ barba.init({
   ]
 });
 
-barba.hooks.after(() => {
+barba.hooks.after((data) => {
   setTimeout(() => {
-    AppState.isTransitioning = false;
+    AppState.isTransitioning  = false;
     AppState.isHistoryNavigation = false;
-  }, 200)
+
+    const ns = data.next.namespace;
+    if (ns !== 'home') runPageAnimation(ns);
+  }, 200);
 });
 
 // ================================================
-// HOVER PREVIEW                     
+// HOVER PREVIEW
 // ================================================
 
 function initHoverPreview() {
@@ -579,10 +735,9 @@ function initHoverPreview() {
     let hoverTl = null;
 
     link.addEventListener("mouseenter", () => {
-      if (AppState.isTransitioning) return;   
+      if (AppState.isTransitioning) return;
 
       if (hoverTl) hoverTl.kill();
-
       gsap.set(".page-transition", { scale: 0 });
 
       const textEl = document.querySelector(".page-name");
@@ -592,7 +747,7 @@ function initHoverPreview() {
 
       hoverTl = gsap.timeline();
       hoverTl.to(".page-transition", {
-        opacity: 0.8,
+        opacity: 0.7,
         scale: 1,
         duration: 0.6,
         ease: "expo.out",
@@ -600,7 +755,7 @@ function initHoverPreview() {
     });
 
     link.addEventListener("mouseleave", () => {
-      if (AppState.isTransitioning) return;   
+      if (AppState.isTransitioning) return;
 
       if (hoverTl) hoverTl.kill();
       hoverTl = gsap.timeline();
@@ -614,7 +769,6 @@ function initHoverPreview() {
   });
 }
 
-
 // ================================================
 // BOOT
 // ================================================
@@ -623,38 +777,23 @@ initAllWaves();
 
 window.addEventListener("load", () => {
   const navEntry = performance.getEntriesByType("navigation")[0];
-  
-  if (navEntry.type === "reload") {
-    const currentContainer = document.querySelector('[data-barba="container"]');
-    const namespace = currentContainer?.dataset.barbaNamespace;
+  const currentContainer = document.querySelector('[data-barba="container"]');
+  const namespace = currentContainer?.dataset.barbaNamespace;
 
-    if (namespace === 'home') {
-      gsap.set(".nav-bar", { scale: 0 });
-      gsap.set(".round-logo", { transform: "translate(-50%, -50%) !important" });
-      initHomeAnimation();
-    } else {
-      gsap.set(".nav-bar", { scale: 1, pointerEvents: "auto" });
-      initStagger();
-    }
-
-    initNav();
-    initHoverPreview();
-    initAllWaves();
+  if (namespace === 'home') {
+    gsap.set(".nav-bar",    { scale: 0 });
+    initHomeAnimation();
   } else {
-    const currentContainer = document.querySelector('[data-barba="container"]');
-    const namespace = currentContainer?.dataset.barbaNamespace;
+    gsap.set(".nav-bar", { scale: 1, pointerEvents: "auto" });
+    initStagger();
+    if (namespace) runPageAnimation(namespace);
+  }
 
-    if (namespace === 'home') {
-      gsap.set(".nav-bar", { scale: 0 });
-      gsap.set(".round-logo", { transform: "translate(-50%, -50%) !important" });
-      initHomeAnimation();
-    } else {
-      gsap.set(".nav-bar", { scale: 1, pointerEvents: "auto" });
-      initStagger();
-    }
+  initNav();
+  initHoverPreview();
 
-    initNav();
-    initHoverPreview();
+  if (navEntry.type === "reload") {
+    initAllWaves();
   }
 
   document.querySelectorAll("[data-barba-link]").forEach(link => {
