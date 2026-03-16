@@ -32,10 +32,6 @@ p {
     background-color: #f1efe7;
 }
 
-.site-info p span {
-    color: #9a9994;
-}
-
 .img-preview {
     position: absolute;
     top: 60%;
@@ -58,8 +54,6 @@ p {
 
 .minimap {
     position: absolute;
-    top: auto;
-    right: auto;
     top: 2em;
     left: 50%;
     transform: translateX(-50%);
