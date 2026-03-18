@@ -25,20 +25,12 @@ const container = document.querySelector(".container");
   }
 
   function updateDimensions() {
-    isHorizontal = true;
-    if (isHorizontal) {
-      dimensions = {
-        itemSize: itemElements[0].getBoundingClientRect().width,
-        containerSize: items.scrollWidth,
-        indicatorSize: indicator.getBoundingClientRect().width,
-      };
-    } else {
-      dimensions = {
-        itemSize: itemElements[0].getBoundingClientRect().height,
-        containerSize: items.getBoundingClientRect().height,
-        indicatorSize: indicator.getBoundingClientRect().height,
-      }
-    }
+    dimensions = {
+      itemSize: itemElements[0].getBoundingClientRect().width,
+      containerSize: items.scrollWidth,
+      indicatorSize: indicator.getBoundingClientRect().width,
+    };
+    
     return dimensions;
   }
   
@@ -208,7 +200,7 @@ const container = document.querySelector(".container");
   animate();
 
 
- CustomEase.create("hop", ".8, 0, 0.1, 1");
+  CustomEase.create("hop", ".8, 0, 0.1, 1");
 
   const videos = document.querySelectorAll("video");
   let isHoveringPreview = false;

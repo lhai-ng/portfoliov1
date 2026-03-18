@@ -270,7 +270,7 @@ function initNav() {
       .to(bar1,        { rotation: 45,  top: topValue,    duration: 0.4, ease: "power3.inOut" }, "<")
       .to(bar2,        { rotation: 90,                    duration: 0.4, ease: "power3.inOut" }, "<")
       .to(bar3,        { rotation: -45, bottom: topValue, duration: 0.4, ease: "power3.inOut" }, "<")
-      .to(".circle-1", { scale: 1, duration: .6, ease: "back.out(1.8)", delay: .5 }, "<")
+      .to(".circle-1", { scale: 1, duration: .6, ease: "back.out(1.8)", delay: .3 }, "<")
       .to(".circle-2", { scale: 1, duration: .6, ease: "back.out(1.8)" }, "<")
       .restart();
   }
@@ -281,7 +281,7 @@ function initNav() {
       .to(bar2,        { rotation: 0,             duration: 0.4, ease: "power3.inOut" }, "<")
       .to(bar3,        { rotation: 0, bottom: 0,  duration: 0.4, ease: "power3.inOut" }, "<")
       .to(".menu",     { right: "-100%", ease: "power3.in" }, "<")
-      .to(".circle-1", { scale: 0, duration: .6, ease: "power4.out", delay: .4 }, "<")
+      .to(".circle-1", { scale: 0, duration: .6, ease: "power4.out", delay: .2 }, "<")
       .to(".circle-2", { scale: 0, duration: .6, ease: "power4.out" }, "<")
       .restart();
   }
@@ -573,6 +573,15 @@ function initWorksAnimation () {
   const previewImage = document.querySelector(".img-preview img");
   const itemImages = document.querySelectorAll(".item img");
 
+  const projectName = document.querySelector(".project-name");
+  const clientInfo = document.querySelector(".client-container .info-content");
+  const roleInfo = document.querySelector(".role-container .info-content");
+  const categoryInfo = document.querySelector(".category-container .info-content");
+  const descriptionInfo = document.querySelector(".description .info-content");
+
+  const viewCursor = document.querySelector(".view-cursor");
+  const worksCanvas = document.querySelector(".works-canvas");
+
   let isHorizontal = true;
   let dimensions = {
     itemSize: 0,
@@ -585,7 +594,13 @@ function initWorksAnimation () {
   let targetTranslate = 0;
   let isClickMove = false;
   let currentImageIndex = 0;
+  let isHoveringPreview = false;
   const activeItemOpacity = 1;
+
+  let previousVideo = null;
+  let videoTimeline = null;
+  let resetTimeline = null;
+  let imageTimeline = null;
 
   function lerp(start, end, factor) {
     return start + (end - start) * factor;
@@ -648,8 +663,8 @@ function initWorksAnimation () {
     const tensList = document.querySelector(".tens .list");
     const unitsList = document.querySelector(".units .list");
 
-    const tensOffset = (9 - tens) * 96;
-    const unitsOffset = (9 - units) * 96;
+    const tensOffset = (9 - tens) * (screenWidth > 991 ? 96 : screenWidth > 767 ? 80 : 72);
+    const unitsOffset = (9 - units) * (screenWidth > 991 ? 96 : screenWidth > 767 ? 80 : 72);
 
     if (shouldAnimate) {
       gsap.killTweensOf(tensList);
@@ -663,23 +678,6 @@ function initWorksAnimation () {
     }
   }
 
-  function updatePreviewImage(index) {
-  if (currentImageIndex !== index) {
-    currentImageIndex = index;
-    const targetItem = itemElements[index];
-    const targetSrc = targetItem.querySelector("img").getAttribute("src");
-    
-    previewImage.setAttribute("src", targetSrc);
-    gsap.killTweensOf(previewImage);
-    gsap.fromTo(previewImage,
-      { scale: 1.2 },
-      { scale: 1, duration: 0.4, ease: "power2.out" }
-    );
-
-    const year = targetItem.getAttribute("data-year");
-    updateYearCount(parseInt(year));
-  }
-}
 
   function animate() {
     const lerpFactor = isClickMove ? 0.05 : 0.075;
@@ -777,21 +775,16 @@ function initWorksAnimation () {
 
   animate();
 
+  currentImageIndex = -1; 
+  updatePreviewImage(0);
 
- CustomEase.create("hop", ".8, 0, 0.1, 1");
-
-  const videos = document.querySelectorAll("video");
-  let isHoveringPreview = false;
-  let previousVideo = null;
-  let videoTimeline = null;
-  let resetTimeline = null;
-  let imageTimeline = null;
+  CustomEase.create("hop", ".8, 0, 0.1, 1");
 
   function getActiveVideo() {
     const activeItem = itemElements[currentImageIndex];
     const vid = activeItem.getAttribute("data-vid");
     if (!vid) return null;
-    return document.querySelector(`video[data-vid="${vid}"]`);
+    return document.querySelector(`div[data-vid="${vid}"]`);
   }
 
   function resetVideo(video) {
@@ -804,12 +797,12 @@ function initWorksAnimation () {
         width: "120px",
         height: "80px",
         top: "300px",
-        duration: 0.6,
+        duration: 1,
         ease: "hop",
       })
       .to(video, {
         clipPath: "inset(100% 0 0 0)",
-        duration: 0.5,
+        duration: 0.8,
         ease: "hop",
       }, "<");
   }
@@ -888,6 +881,21 @@ function initWorksAnimation () {
       const targetItem = itemElements[index];
       const targetSrc = targetItem.querySelector("img").getAttribute("src");
 
+      const targetName = projects[index].name;
+      const targetClient = projects[index].client;
+      const targetRole = projects[index].role;
+      const targetCategory = projects[index].category;
+      const targetDescription = projects[index].description;
+      const targetLink = projects[index].link;
+
+      projectName.textContent = targetName;
+      clientInfo.textContent = targetClient;
+      roleInfo.textContent = targetRole;
+      categoryInfo.textContent = targetCategory;
+      descriptionInfo.textContent = targetDescription;
+
+      preview.href = targetLink;
+
       previewImage.setAttribute("src", targetSrc);
       gsap.killTweensOf(previewImage);
       gsap.fromTo(previewImage,
@@ -901,6 +909,14 @@ function initWorksAnimation () {
       onActiveItemChange();
     }
   }
+
+  preview.addEventListener("click", (e) => {
+    e.preventDefault();
+    const href = preview.getAttribute("href");
+    if (!href || href === "#") return;
+
+    window.open(href, "_blank");
+  })
 
   preview.addEventListener("mouseenter", () => {
     isHoveringPreview = true;
@@ -937,6 +953,28 @@ function initWorksAnimation () {
       previousVideo = initVideo;
     }
   }
+
+  function resize() {
+    const w = window.innerWidth; 
+    const h = window.innerHeight;
+    if (w <= 1280 && w >= 992) {
+      gsap.set(".main-content", { left: "8vw" });
+      gsap.set(".info-container", { paddingLeft: "40px" });
+    } else if (w > 1280) {
+      gsap.set(".main-content", { left: "28vw" });
+      gsap.set(".info-container", { paddingLeft: "48px" });
+    } else if (w > 767 && w <= 991 && h >= 1024) {
+      gsap.set(".year-count-container", { left: "12vw" });
+      gsap.set(".minimap", { left: "calc(12vw + 260px)" })
+      gsap.set(".main-content", { left: "28vw", bottom: "10vh", flexDirection: "column", gap: "40px" });
+      gsap.set(".info-container", { paddingLeft: "0px" });
+      gsap.set(".project-name", { marginTop: "0px" })
+    }
+  }
+
+  window.addEventListener("resize", resize, { signal });
+
+  resize();
 }
 
 
