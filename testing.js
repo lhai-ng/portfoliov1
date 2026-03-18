@@ -556,6 +556,12 @@ function initServiceAnimation() {
 // ================================================
 
 let _worksAbortController = null;
+let projects = [];
+
+async function loadProjects() {
+  const response = await fetch("https://cdn.jsdelivr.net/gh/lhai-ng/portfoliov1@main/projects.json");
+  projects = await response.json();
+}
 
 function destroyWorksAnimation() {
   if (_worksAbortController) {
@@ -1144,7 +1150,11 @@ barba.hooks.after((data) => {
     AppState.isHistoryNavigation = false;
 
     const ns = data.next.namespace;
-    if (ns !== 'home') runPageAnimation(ns);
+    if (ns === 'works') {
+      loadProjects().then(() => initWorksAnimation()); 
+    } else if (ns !== 'home') {
+      runPageAnimation(ns);
+    }
   }, 200);
 });
 
@@ -1212,7 +1222,11 @@ window.addEventListener("load", () => {
   } else {
     gsap.set(".nav-bar", { scale: 1, pointerEvents: "auto" });
     initStagger();
-    if (namespace) runPageAnimation(namespace);
+    if (namespace === 'works') {
+      loadProjects().then(() => runPageAnimation(namespace));
+    } else {
+      runPageAnimation(namespace);
+    }
   }
 
   initNav();
