@@ -820,8 +820,8 @@ function initWorksAnimation () {
     videoTimeline = gsap.timeline();
     videoTimeline
       .to(video, {
-        width: "500px",
-        height: "240px",
+        width: screenWidth > 991 ? "400px" : screenWidth > 767 ? "300px": "220px",
+        height: screenWidth > 991 ? "240px" : screenWidth > 767 ? "192px": "132px",
         top: 0,
         duration: 1,
         ease: "hop",
@@ -984,6 +984,100 @@ function initWorksAnimation () {
 }
 
 
+
+
+// ================================================
+// ABOUT ANIMATION
+// ================================================
+
+let _aboutLenis = null;
+let _aboutTimeline = null;
+let _aboutRaf = null;
+
+function destroyAboutAnimation() {
+  ScrollTrigger.getAll().forEach(trigger => {
+    if (trigger.trigger?.classList?.contains("about-container")) {
+      trigger.kill();
+    }
+  });
+
+  if (_aboutTimeline) {
+    _aboutTimeline.kill();
+    _aboutTimeline = null;
+  }
+
+  if (_aboutRaf) {
+    gsap.ticker.remove(_aboutRaf);
+    _aboutRaf = null;
+  }
+
+  if (_aboutLenis) {
+    _aboutLenis.destroy();
+    _aboutLenis = null;
+  }
+
+  ScrollTrigger.refresh(); 
+}
+
+function initAboutAnimation() {
+  const frameCount = 30;
+  const img = document.querySelector(".about-video");
+  const images = [];
+
+  for (let i = 1; i <= frameCount; i++) {
+    const image = new Image();
+    image.src = `https://cdn.jsdelivr.net/gh/lhai-ng/portfoliov1-assets@main/about-sequence/about_${String(i).padStart(2, "0")}.webp`;
+    images.push(image);
+  }
+
+  images[0].onload = () => { img.src = images[0].src; };
+
+  function renderFrame(index) {
+    const clamped = Math.max(0, Math.min(frameCount - 1, index));
+    for (let f = clamped; f >= 0; f--) {
+      if (images[f].complete && images[f].naturalWidth > 0) {
+        img.src = images[f].src;
+        break;
+      }
+    }
+  }
+
+  _aboutLenis = new Lenis();
+
+  _aboutLenis.on("scroll", ScrollTrigger.update);
+
+  _aboutRaf = (time) => {
+    _aboutLenis.raf(time * 1000);
+  };
+
+  gsap.ticker.add(_aboutRaf);
+  gsap.ticker.lagSmoothing(0);
+
+  const playhead = { frame: 0 };
+
+  _aboutTimeline = gsap.timeline({
+    scrollTrigger: {
+      trigger: ".about-container",
+      start: "top top",
+      end: "+=300%",
+      pin: true,
+      scrub: 1,
+      anticipatePin: 1,
+    }
+  });
+
+  _aboutTimeline.to(playhead, {
+    frame: frameCount - 1,
+    ease: "none",
+    duration: 1,
+    onUpdate() {
+      renderFrame(Math.round(playhead.frame));
+    }
+  });
+}
+
+
+
 // ================================================
 // PAGE-SPECIFIC ANIMATION DISPATCHER
 // ================================================
@@ -1122,6 +1216,12 @@ barba.init({
         pageTransition(data);
         await delay(screenWidth < 992 ? 800 : 2200);
         done();
+      },
+
+      async afterLeave(data) {
+        if (data.current.namespace === 'about') {
+          destroyAboutAnimation();
+        }
       },
 
       async beforeEnter(data) {
