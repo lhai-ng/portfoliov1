@@ -1022,24 +1022,19 @@ function destroyAboutAnimation() {
 function initAboutAnimation() {
   const frameCount = 30;
   const img = document.querySelector(".about-video");
+
   const images = [];
+  let loaded = 0;
 
   for (let i = 1; i <= frameCount; i++) {
     const image = new Image();
     image.src = `https://cdn.jsdelivr.net/gh/lhai-ng/portfoliov1-assets@main/about-sequence/about_${String(i).padStart(2, "0")}.webp`;
     images.push(image);
-  }
 
-  images[0].onload = () => { img.src = images[0].src; };
-
-  function renderFrame(index) {
-    const clamped = Math.max(0, Math.min(frameCount - 1, index));
-    for (let f = clamped; f >= 0; f--) {
-      if (images[f].complete && images[f].naturalWidth > 0) {
-        img.src = images[f].src;
-        break;
-      }
-    }
+    image.onload = () => {
+      loaded++;
+      if (loaded === 1) img.src = image.src;
+    };
   }
 
   _aboutLenis = new Lenis();
@@ -1066,14 +1061,24 @@ function initAboutAnimation() {
     }
   });
 
-  _aboutTimeline.to(playhead, {
-    frame: frameCount - 1,
-    ease: "none",
-    duration: 1,
-    onUpdate() {
-      renderFrame(Math.round(playhead.frame));
-    }
-  });
+  _aboutTimeline
+    .to(playhead, {
+      frame: 29,
+      ease: "none",
+      duration: 2.5,
+      onUpdate: () => {
+        const frame = Math.round(playhead.frame);
+        if (images[frame] && images[frame].complete) {
+          img.src = images[frame].src;
+        }
+      }
+    })
+    .to(".about-video", {
+      width: screenWidth > 767 ? "28%" : "60%",
+      objectPosition: "37% 0%",
+      ease: "power2.inOut",
+      duration: 3,
+    }, "<")
 }
 
 
