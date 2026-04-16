@@ -1381,120 +1381,162 @@ function initAboutAnimation() {
 
   const playhead = { frame: 0 };
 
-  _aboutTimeline = gsap.timeline({
-    scrollTrigger: {
-      trigger: ".about-container",
-      start: "top top",
-      end: "+=1000%",
-      pin: true,
-      scrub: 1,
-      anticipatePin: true,
-    },
-  });
-
-  _aboutTimeline
-    .to(playhead, {
-      frame: 29,
-      ease: "none",
-      duration: 2.5,
-      onUpdate: () => {
-        const frame = Math.round(playhead.frame);
-        const reverseFrame = frameCount - 1 - frame;
-
-        if (images[reverseFrame] && images[reverseFrame].complete) {
-          img.src = images[reverseFrame].src;
-        }
+  if (screenWidth > 991) {
+    _aboutTimeline = gsap.timeline({
+      scrollTrigger: {
+        trigger: ".about-container",
+        start: "top top",
+        end: "+=1000%",
+        pin: true,
+        scrub: 1,
+        anticipatePin: true,
       },
-    })
-    .to(
-      ".about-video",
-      {
-        width: screenWidth > 767 ? "28%" : "60%",
-        objectPosition: "37% 0%",
-        ease: "power2.inOut",
-        duration: 3,
-      },
-      "<",
-    )
-    .to(".about-container", {
-      translateX: screenWidth > 991 ? "-300vw" : "0vw",
-      translateY: screenWidth > 991 ? "0vh" : "-300vh",
-      duration: 6,
-      ease: "linear"
-    })
+    });
 
-    .to(".about-container", {
-      backgroundColor: "var(--primary-minus-2)",
-      ease: "power4.inOut",
-      duration: 1,
-    }, "<.3")
-    .to(".about-currently", {
-      borderColor: "var(--light-100)",
-      ease: "power4.inOut",
-      duration: 1,
-    }, "<")
-    .to(".currently-title", {
-      color: "var(--light-100)",
-      ease: "power4.inOut",
-      duration: 1,
-    }, "<")
-    .to(".currently-text", {
-      color: "var(--light-100)",
-      ease: "power4.inOut",
-      duration: 1,
-    }, "<")
-    .to(".short-intro", {
-      color: "var(--light-100)",
-      ease: "power4.inOut",
-      duration: 1,
-    }, "<")
-    .to(".currently-h-line", {
-      background: "var(--light-100)",
-      ease: "power4.inOut",
-      duration: 1,
-    }, "<")
-    .to(".currently-v-line", {
-      background: "var(--light-100)",
-      ease: "power4.inOut",
-      duration: 1,
-    }, "<")
-    
-    .to(".about-container", {
-      top: "-100vh",
-      ease: "linear",
-      duration: 1.5,
-    })
-    .to(".link-to-contact", {
-      bottom: "0px",
-      ease: "linear",
-      duration: 1.5,
-    }, "<")
-    .from(".logo-about", {
-      rotate: "240deg",
-      scale: .7,
-      ease: "linear",
-      duration: 1.5,
-    }, "<")
-    .to(".pin-spacer", {
-      pointerEvents: "none",
-      ease: "linear",
-      duration: .1,
-    }, "<.8")
-    
-  ltcTextContainer.addEventListener("mouseenter", () => {
-    gsap.to(".ltc-link", {
-      gap: "1.5vw",
-      ease: "power4.inOut",
-      duration: .8
-    })
-  })
-  ltcTextContainer.addEventListener("mouseleave", () => {
-    gsap.to(".ltc-link", {
-      gap: "3vw",
-      ease: "power4.inOut",
-      duration: .8
-    })
-  })
+    _aboutTimeline
+      .to(playhead, {
+        frame: 29,
+        ease: "none",
+        duration: 2.5,
+        onUpdate: () => {
+          const frame = Math.round(playhead.frame);
+          const reverseFrame = frameCount - 1 - frame;
+
+          if (images[reverseFrame] && images[reverseFrame].complete) {
+            img.src = images[reverseFrame].src;
+          }
+        },
+      })
+      .to(
+        ".about-video",
+        {
+          width: screenWidth > 767 ? "28%" : "60%",
+          objectPosition: "37% 0%",
+          ease: "power2.inOut",
+          duration: 3,
+        },
+        "<",
+      )
+      .to(".about-container", {
+        translateX: "-300vw",
+        duration: 6,
+        ease: "linear",
+      })
+
+      .to(
+        ".about-container",
+        {
+          backgroundColor: "var(--primary-minus-2)",
+          ease: "power4.inOut",
+          duration: 1.2,
+        },
+        "<.3",
+      )
+      .to(
+        ".about-currently",
+        {
+          borderColor: "var(--light-100)",
+          ease: "power4.inOut",
+          duration: 1.2,
+        },
+        "<",
+      )
+      .to(
+        ".currently-title",
+        {
+          color: "var(--light-100)",
+          ease: "power4.inOut",
+          duration: 1.2,
+        },
+        "<",
+      )
+      .to(
+        ".currently-text",
+        {
+          color: "var(--light-100)",
+          ease: "power4.inOut",
+          duration: 1.2,
+        },
+        "<",
+      )
+      .to(
+        ".short-intro",
+        {
+          color: "var(--light-100)",
+          ease: "power4.inOut",
+          duration: 1.2,
+        },
+        "<",
+      )
+      .to(
+        ".currently-h-line",
+        {
+          background: "var(--light-100)",
+          ease: "power4.inOut",
+          duration: 1.2,
+        },
+        "<",
+      )
+      .to(
+        ".currently-v-line",
+        {
+          background: "var(--light-100)",
+          ease: "power4.inOut",
+          duration: 1.2,
+        },
+        "<",
+      )
+
+      .to(".about-container", {
+        top: "-100vh",
+        ease: "linear",
+        duration: 1.5,
+      })
+      .to(
+        ".link-to-contact",
+        {
+          bottom: "0px",
+          ease: "linear",
+          duration: 1.5,
+        },
+        "<",
+      )
+      .from(
+        ".logo-about",
+        {
+          rotate: "240deg",
+          scale: 0.7,
+          ease: "linear",
+          duration: 1.5,
+        },
+        "<",
+      )
+      .to(
+        ".pin-spacer",
+        {
+          pointerEvents: "none",
+          ease: "linear",
+          duration: 0.1,
+        },
+        "<.8",
+      );
+
+    ltcTextContainer.addEventListener("mouseenter", () => {
+      gsap.to(".ltc-link", {
+        gap: "1.5vw",
+        ease: "power4.inOut",
+        duration: 0.8,
+      });
+    });
+    ltcTextContainer.addEventListener("mouseleave", () => {
+      gsap.to(".ltc-link", {
+        gap: "3vw",
+        ease: "power4.inOut",
+        duration: 0.8,
+      });
+    });
+  }
+  
 
   const config = {
     gravity: { x: 0, y: 1 },
