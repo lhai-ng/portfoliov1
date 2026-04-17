@@ -280,7 +280,7 @@ function initStagger() {
     const letters = link.querySelectorAll("[stagger-link-text] .char");
     link.addEventListener("mouseenter", () => {
       gsap.to(letters, {
-        yPercent: -84,
+        yPercent: -102,
         duration: 0.7,
         ease: "power4.inOut",
         stagger: { each: 0.02 },
@@ -1713,6 +1713,81 @@ function initAboutAnimation() {
       initPhysics(container);
     });
   }
+}
+
+// ================================================
+// CONTACT ANIMATION
+// ================================================
+
+function initContactAnimation() {
+  const timeEl = document.getElementById("vn-time");
+  const clockEl = timeEl.querySelector(".clock");
+
+  function updateVietnamTime() {
+    const now = new Date();
+
+    timeEl.dateTime = now.toISOString();
+
+    clockEl.textContent = now.toLocaleTimeString("vi-VN", {
+      timeZone: "Asia/Ho_Chi_Minh",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+  }
+
+  updateVietnamTime();
+  setInterval(updateVietnamTime, 1000);
+
+  const submitButton = document.querySelector(".submit-button");
+  submitButton.type = "submit";
+  const submitText = submitButton.querySelector(".submit-text-wrapper");
+
+  const bookACall = document.querySelector(".book-a-call");
+  const bacSlide = document.querySelector(".bac-contact-slider");
+
+  function animateContactButton(button, text) {
+    gsap.to(button, {
+      borderRadius: "5px",
+      duration: 0.8,
+      ease: "expo.out",
+      overwrite: "auto",
+    });
+    gsap.to(text, {
+      yPercent: -50,
+      duration: 1,
+      ease: "expo.out",
+      overwrite: "auto",
+    });
+  }
+
+  function resetContactButton(button, text) {
+    gsap.to(button, {
+      borderRadius: "50px",
+      duration: 3,
+      ease: "expo.out",
+      overwrite: "auto",
+    });
+    gsap.to(text, {
+      yPercent: 0,
+      duration: 0.8,
+      ease: "expo.out",
+      overwrite: "auto",
+    });
+  }
+
+  submitButton.addEventListener("mouseenter", () => {
+    animateContactButton(submitButton, submitText);
+  });
+  submitButton.addEventListener("mouseleave", () => {
+    resetContactButton(submitButton, submitText);
+  });
+  bookACall.addEventListener("mouseenter", () => {
+    animateContactButton(bookACall, bacSlide);
+  });
+  bookACall.addEventListener("mouseleave", () => {
+    resetContactButton(bookACall, bacSlide);
+  });
 }
 
 // ================================================
