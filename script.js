@@ -1945,40 +1945,43 @@ function initContactCanvasAnimation() {
     });
   }
 
-  fields.forEach(({ canvasSel, inputSel }) => {
-    const canvasState = initContactCanvas(canvasSel);
-    if (!canvasState) return;
+  requestAnimationFrame(() => {
+    fields.forEach(({ canvasSel, inputSel }) => {
+      const canvasState = initContactCanvas(canvasSel);
+      if (!canvasState) return;
 
-    const input = document.querySelector(inputSel);
-    if (!input) return;
+      const input = document.querySelector(inputSel);
+      if (!input) return;
 
-    const uid = "contact-input-" + Math.random().toString(36).slice(2);
-    input.id = uid;
+      const uid = "contact-input-" + Math.random().toString(36).slice(2);
+      input.id = uid;
 
-    const styleTag = document.createElement("style");
-    styleTag.textContent = `#${uid}::placeholder { color: #999; transition: color 1s ease; }`;
-    document.head.appendChild(styleTag);
-    _contactStyleTags.push(styleTag);
+      const styleTag = document.createElement("style");
+      styleTag.textContent = `#${uid}::placeholder { color: #999; transition: color 1s ease; }`;
+      document.head.appendChild(styleTag);
+      _contactStyleTags.push(styleTag);
 
-    canvasState._styleTag = styleTag;
-    canvasState._inputId = uid;
+      canvasState._styleTag = styleTag;
+      canvasState._inputId = uid;
 
-    let isFilled = false;
+      let isFilled = false;
 
-    input.addEventListener("blur", () => {
-      const hasValue = input.value.trim().length > 0;
+      input.addEventListener("blur", () => {
+        const hasValue = input.value.trim().length > 0;
 
-      if (hasValue && !isFilled) {
-        isFilled = true;
-        animateFill(canvasState, FILL_FILLED);
-        animateTextColor(input, TEXT_COLOR_FILLED);
-      } else if (!hasValue && isFilled) {
-        isFilled = false;
-        animateFill(canvasState, FILL_EMPTY);
-        animateTextColor(input, TEXT_COLOR_EMPTY);
-      }
+        if (hasValue && !isFilled) {
+          isFilled = true;
+          animateFill(canvasState, FILL_FILLED);
+          animateTextColor(input, TEXT_COLOR_FILLED);
+        } else if (!hasValue && isFilled) {
+          isFilled = false;
+          animateFill(canvasState, FILL_EMPTY);
+          animateTextColor(input, TEXT_COLOR_EMPTY);
+        }
+      });
     });
-  });
+  })
+  
 }
 
 function initContactAnimation() {
