@@ -1945,7 +1945,7 @@ function initContactCanvasAnimation() {
     });
   }
 
-  requestAnimationFrame(() => {
+  setTimeout(() => {
     fields.forEach(({ canvasSel, inputSel }) => {
       const canvasState = initContactCanvas(canvasSel);
       if (!canvasState) return;
@@ -1980,8 +1980,7 @@ function initContactCanvasAnimation() {
         }
       });
     });
-  })
-  
+  }, 50);
 }
 
 function initContactAnimation() {
