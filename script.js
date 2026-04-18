@@ -1345,6 +1345,7 @@ function destroyAboutAnimation() {
     _aboutLenis = null;
   }
 
+  document.documentElement.style.overflowY = "";
   ScrollTrigger.refresh();
 }
 
