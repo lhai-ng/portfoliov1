@@ -1369,16 +1369,12 @@ function initAboutAnimation() {
     };
   }
 
-  _aboutLenis = new Lenis({
-    smoothTouch: false,
-    lerp: 0.1,
-    syncTouch: false,
-  });
+  _aboutLenis = new Lenis();
 
   _aboutLenis.on("scroll", ScrollTrigger.update);
 
   _aboutRaf = (time) => {
-    _aboutLenis.raf(performance.now());
+    _aboutLenis.raf(time * 1000);
   };
 
   gsap.ticker.add(_aboutRaf);
@@ -1394,7 +1390,7 @@ function initAboutAnimation() {
         end: "+=1000%",
         pin: true,
         scrub: 1,
-        anticipatePin: screenWidth > 991 ? true : false,
+        anticipatePin: true,
       },
     });
 
@@ -1426,7 +1422,7 @@ function initAboutAnimation() {
         "<",
       )
       .to(".about-container", {
-        x: () => -window.innerWidth * 3,
+        translateX: "-300vw",
         duration: 6,
         ease: "linear",
       })
