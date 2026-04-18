@@ -1980,7 +1980,9 @@ function initContactCanvasAnimation() {
         }
       });
     });
-  }, 50);
+  }, 100);
+  
+  
 }
 
 function initContactAnimation() {
