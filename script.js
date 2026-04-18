@@ -1558,7 +1558,7 @@ function initAboutAnimation() {
       });
     });
   } else {
-    document.head.style.overflowY = "auto"
+    document.documentElement.style.overflowY = "auto"
   }
 
   const tl = gsap.timeline({ repeat: -1 });
