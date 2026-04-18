@@ -1374,7 +1374,7 @@ function initAboutAnimation() {
   _aboutLenis.on("scroll", ScrollTrigger.update);
 
   _aboutRaf = (time) => {
-    _aboutLenis.raf(time * 1000);
+    _aboutLenis.raf(performance.now());
   };
 
   gsap.ticker.add(_aboutRaf);
