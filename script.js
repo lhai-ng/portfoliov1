@@ -2372,21 +2372,14 @@ window.addEventListener("load", () => {
 
   const style = document.createElement("style");
   style.textContent = `
-  input:-webkit-autofill,
-  input:-webkit-autofill:hover,
-  input:-webkit-autofill:focus,
-  input:-webkit-autofill:active {
-
-    -webkit-box-shadow: 0 0 0 1000px #dcdcdc inset !important;
-    box-shadow: 0 0 0 1000px #dcdcdc inset !important;
-
-    -webkit-text-fill-color: #000 !important;
-    caret-color: #000;
-
-    border-radius: inherit;
-
-    transition: background-color 9999s ease-in-out 0s !important;
-  }
-`;
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active {
+      -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+      box-shadow: 0 0 0 1000px transparent inset !important;
+      transition: background-color 9999s ease-in-out 0s !important;
+    }
+  `;
   document.head.appendChild(style);
 });
