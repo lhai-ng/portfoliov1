@@ -1486,6 +1486,24 @@ function initAboutAnimation() {
         },
         "<",
       )
+      .to(
+        ".line",
+        {
+          background: "var(--light-100)",
+          ease: "power4.inOut",
+          duration: 1.2,
+        },
+        "<",
+      )
+      .to(
+        ".sign-text",
+        {
+          color: "var(--light-100)",
+          ease: "power4.inOut",
+          duration: 1.2,
+        },
+        "<",
+      )
 
       .to(".about-container", {
         top: "-100vh",
@@ -1537,6 +1555,22 @@ function initAboutAnimation() {
     });
   }
   
+  const tl = gsap.timeline({ repeat: -1 });
+
+  tl.fromTo(
+    ".line",
+    { clipPath: "inset(0% 100% 0% 0%)" },
+    {
+      clipPath: "inset(0% 0% 0% 0%)",
+      duration: 0.8,
+      ease: "power4.inOut",
+      delay: .6,
+    },
+  ).to(".line", {
+    clipPath: "inset(0% 0% 0% 100%)", // biến mất về bên phải
+    duration: 0.8,
+    ease: "power4.inOut",
+  }, "<.6");
 
   const config = {
     gravity: { x: 0, y: 1 },
@@ -1718,8 +1752,231 @@ function initAboutAnimation() {
 // ================================================
 // CONTACT ANIMATION
 // ================================================
+let _contactTickers = [];
+let _contactStyleTags = [];
+let _contactWaves = [];
+
+function destroyContactAnimation() {
+  _contactTickers.forEach((fn) => gsap.ticker.remove(fn));
+  _contactTickers = [];
+
+  _contactStyleTags.forEach((tag) => tag.remove());
+  _contactStyleTags = [];
+
+  _contactWaves.forEach((w) => w.kill());
+  _contactWaves = [];
+}
+
+function initContactCanvasAnimation() {
+  const AMPLITUDE_SCALE = 0.6;
+
+  const FILL_EMPTY = 0.1;
+  const FILL_FILLED = 0.9;
+
+  const TEXT_COLOR_EMPTY = "#262626";
+  const TEXT_COLOR_FILLED = "#ffffff";
+
+  const contactCanvases = {};
+
+  const fields = [
+    {
+      wrapper: ".your-name",
+      canvasSel: ".your-name .contact-canvas",
+      inputSel: ".your-name .form-input",
+    },
+    {
+      wrapper: ".your-email",
+      canvasSel: ".your-email .contact-canvas",
+      inputSel: ".your-email .form-input",
+    },
+    {
+      wrapper: ".your-subject",
+      canvasSel: ".your-subject .contact-canvas",
+      inputSel: ".your-subject .form-input",
+    },
+    {
+      wrapper: ".your-message",
+      canvasSel: ".your-message .contact-canvas",
+      inputSel: ".your-message .form-input",
+    },
+  ];
+
+  function getContactWaveHeight(fill, BOX_H) {
+    return BOX_H * (1 - fill);
+  }
+
+  function initContactCanvas(sel) {
+    const canvas = document.querySelector(sel);
+    if (!canvas) return null;
+
+    const resolution = window.devicePixelRatio || 1;
+    const parent = canvas.parentElement;
+    const BOX_W = parent.offsetWidth;
+    const BOX_H = parent.offsetHeight;
+
+    canvas.width = BOX_W * resolution;
+    canvas.height = BOX_H * resolution;
+    canvas.style.width = BOX_W + "px";
+    canvas.style.height = BOX_H + "px";
+
+    const ctx = canvas.getContext("2d");
+    ctx.scale(resolution, resolution);
+
+    const initialWH = getContactWaveHeight(FILL_EMPTY, BOX_H);
+
+    const wave1 = createWave(ctx, {
+      amplitude: 6 * AMPLITUDE_SCALE, 
+      duration: 1,
+      fillStyle: "rgba(2,135,207,0.8)",
+      frequency: 2.5,
+      width: BOX_W,
+      height: BOX_H,
+      segments: 80,
+      waveHeight: initialWH,
+    });
+    const wave2 = createWave(ctx, {
+      amplitude: 9 * AMPLITUDE_SCALE,
+      duration: 2,
+      fillStyle: "rgba(58,184,253,0.75)",
+      frequency: 1.5,
+      width: BOX_W,
+      height: BOX_H,
+      segments: 80,
+      waveHeight: initialWH,
+    });
+    const wave3 = createWave(ctx, {
+      amplitude: 14 * AMPLITUDE_SCALE,
+      duration: 3,
+      fillStyle: "rgba(159,221,254,0.65)",
+      frequency: 0.8,
+      width: BOX_W,
+      height: BOX_H,
+      segments: 80,
+      waveHeight: initialWH,
+    });
+    
+    _contactWaves.push(wave1, wave2, wave3);
+
+    gsap.to(wave1, {
+      duration: 0.5,
+      amplitude: 4 * AMPLITUDE_SCALE,
+      ease: "sine.inOut",
+      repeat: -1,
+      yoyo: true,
+    });
+    gsap.to(wave2, {
+      duration: 1,
+      amplitude: 11 * AMPLITUDE_SCALE,
+      ease: "sine.inOut",
+      repeat: -1,
+      yoyo: true,
+    });
+    gsap.to(wave3, {
+      duration: 1.5,
+      amplitude: 20 * AMPLITUDE_SCALE,
+      ease: "sine.inOut",
+      repeat: -1,
+      yoyo: true,
+    });
+
+    const state = {
+      canvas,
+      ctx,
+      BOX_W,
+      BOX_H,
+      resolution,
+      waves: [wave1, wave2, wave3],
+      fill: FILL_EMPTY, 
+      fillTween: null,
+    };
+
+    const tickerFn = () => {
+      ctx.clearRect(0, 0, BOX_W, BOX_H);
+      ctx.globalCompositeOperation = "soft-light";
+      state.waves.forEach((w) => w.draw());
+    };
+    gsap.ticker.add(tickerFn);
+    _contactTickers.push(tickerFn);
+
+    contactCanvases[sel] = state;
+    return state;
+  }
+
+  function animateFill(state, targetFill) {
+    if (state.fillTween) state.fillTween.kill();
+
+    const proxy = { fill: state.fill };
+    state.fillTween = gsap.to(proxy, {
+      fill: targetFill,
+      duration: 1.2,
+      ease: "expo.inOut",
+      onUpdate: () => {
+        state.fill = proxy.fill;
+        const wh = getContactWaveHeight(proxy.fill, state.BOX_H);
+        state.waves.forEach((w) => {
+          w.waveHeight = wh;
+        });
+
+        if (state._styleTag && state._inputId) {
+          const color = proxy.fill >= 0.9 ? "#e6e6e6" : "#999";
+          state._styleTag.textContent = `#${state._inputId}::placeholder { color: ${color}; transition: color 0.6s ease; }`;
+        }
+      },
+      onComplete: () => {
+        state.fill = targetFill;
+      },
+    });
+  }
+
+  function animateTextColor(inputEl, color) {
+    gsap.to(inputEl, {
+      color,
+      duration: 2,
+      ease: "power2.out",
+    });
+  }
+
+
+  fields.forEach(({ canvasSel, inputSel }) => {
+    const canvasState = initContactCanvas(canvasSel);
+    if (!canvasState) return;
+
+    const input = document.querySelector(inputSel);
+    if (!input) return;
+
+    const uid = 'contact-input-' + Math.random().toString(36).slice(2);
+    input.id = uid;
+
+    const styleTag = document.createElement('style');
+    styleTag.textContent = `#${uid}::placeholder { color: #999; transition: color 1s ease; }`;
+    document.head.appendChild(styleTag);
+    _contactStyleTags.push(styleTag);
+
+    canvasState._styleTag = styleTag;
+    canvasState._inputId = uid;
+
+    let isFilled = false;
+
+    input.addEventListener("blur", () => {
+      const hasValue = input.value.trim().length > 0;
+
+      if (hasValue && !isFilled) {
+        isFilled = true;
+        animateFill(canvasState, FILL_FILLED);
+        animateTextColor(input, TEXT_COLOR_FILLED);
+      } else if (!hasValue && isFilled) {
+        isFilled = false;
+        animateFill(canvasState, FILL_EMPTY);
+        animateTextColor(input, TEXT_COLOR_EMPTY);
+      }
+    });
+  });
+}
 
 function initContactAnimation() {
+  const form = document.querySelector("form");
+  if (form) form.setAttribute("autocomplete", "off");
+
   const timeEl = document.getElementById("vn-time");
   const clockEl = timeEl.querySelector(".clock");
 
@@ -1788,6 +2045,8 @@ function initContactAnimation() {
   bookACall.addEventListener("mouseleave", () => {
     resetContactButton(bookACall, bacSlide);
   });
+
+  initContactCanvasAnimation();
 }
 
 // ================================================
@@ -1958,6 +2217,7 @@ barba.init({
       async leave(data) {
         if (data.current.namespace === "service") destroyServiceAnimation();
         if (data.current.namespace === "works") destroyWorksAnimation();
+        if (data.current.namespace === "contact") destroyContactAnimation();
         const done = this.async();
 
         if (AppState.isHistoryNavigation) {
