@@ -1349,6 +1349,14 @@ function destroyAboutAnimation() {
 }
 
 function initAboutAnimation() {
+  if (screenWidth <= 991) {
+    document.body.style.overflow = "";
+    document.documentElement.style.overflow = "";
+    const aboutContainer = document.querySelector(".about-container");
+    if (aboutContainer) aboutContainer.style.overflow = "";
+    return;
+  }
+
   const frameCount = 30;
   const img = document.querySelector(".about-video");
   const aboutContainer = document.querySelector(".about-container");
