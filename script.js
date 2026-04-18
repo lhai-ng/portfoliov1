@@ -1349,14 +1349,6 @@ function destroyAboutAnimation() {
 }
 
 function initAboutAnimation() {
-  if (screenWidth <= 991) {
-    document.body.style.overflow = "";
-    document.documentElement.style.overflow = "";
-    const aboutContainer = document.querySelector(".about-container");
-    if (aboutContainer) aboutContainer.style.overflow = "";
-    return;
-  }
-
   const frameCount = 30;
   const img = document.querySelector(".about-video");
   const aboutContainer = document.querySelector(".about-container");
@@ -1377,15 +1369,17 @@ function initAboutAnimation() {
     };
   }
 
-  if (screenWidth > 991) {
-    _aboutLenis = new Lenis();
-    _aboutLenis.on("scroll", ScrollTrigger.update);
-    _aboutRaf = () => {
-      _aboutLenis.raf(performance.now());
-    };
-    gsap.ticker.add(_aboutRaf);
-    gsap.ticker.lagSmoothing(0);
-  } 
+  _aboutLenis = new Lenis({
+    smoothTouch: false,
+    lerp: 0.1,
+    syncTouch: false,
+  });
+
+  _aboutLenis.on("scroll", ScrollTrigger.update);
+
+  _aboutRaf = (time) => {
+    _aboutLenis.raf(performance.now());
+  };
 
   gsap.ticker.add(_aboutRaf);
   gsap.ticker.lagSmoothing(0);
@@ -1400,7 +1394,7 @@ function initAboutAnimation() {
         end: "+=1000%",
         pin: true,
         scrub: 1,
-        anticipatePin: true,
+        anticipatePin: screenWidth > 991 ? true : false,
       },
     });
 
@@ -1432,7 +1426,7 @@ function initAboutAnimation() {
         "<",
       )
       .to(".about-container", {
-        translateX: "-300vw",
+        x: () => -window.innerWidth * 3,
         duration: 6,
         ease: "linear",
       })
