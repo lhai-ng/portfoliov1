@@ -1557,6 +1557,8 @@ function initAboutAnimation() {
         duration: 0.8,
       });
     });
+  } else {
+    document.head.style.overflow = "visible"
   }
 
   const tl = gsap.timeline({ repeat: -1 });
