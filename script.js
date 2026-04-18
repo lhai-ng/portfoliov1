@@ -1012,7 +1012,7 @@ function initWorksAnimation() {
       const delta =
         Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
 
-      const scrollVelocity = Math.min(Math.max(delta * 1.2, -80), 80);
+      const scrollVelocity = Math.min(Math.max(delta * 3, -80), 80);
 
       targetTranslate = Math.min(
         Math.max(targetTranslate - scrollVelocity, -maxTranslate),
@@ -1927,7 +1927,7 @@ function initContactCanvasAnimation() {
 
         if (state._styleTag && state._inputId) {
           const color = proxy.fill >= 0.9 ? "#e6e6e6" : "#999";
-          state._styleTag.textContent = `#${state._inputId}::placeholder { color: ${color}; -webkit-text-fill-color: ${color}; transition: color 0.6s ease; }`;
+          state._styleTag.textContent = `#${state._inputId}::placeholder { color: ${color}; -webkit-text-fill-color: ${color}; transition: color 3s ease; }`;
         }
       },
       onComplete: () => {
