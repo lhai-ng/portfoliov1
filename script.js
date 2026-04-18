@@ -1369,13 +1369,15 @@ function initAboutAnimation() {
     };
   }
 
-  _aboutLenis = new Lenis();
-
-  _aboutLenis.on("scroll", ScrollTrigger.update);
-
-  _aboutRaf = (time) => {
-    _aboutLenis.raf(performance.now());
-  };
+  if (screenWidth > 991) {
+    _aboutLenis = new Lenis();
+    _aboutLenis.on("scroll", ScrollTrigger.update);
+    _aboutRaf = () => {
+      _aboutLenis.raf(performance.now());
+    };
+    gsap.ticker.add(_aboutRaf);
+    gsap.ticker.lagSmoothing(0);
+  } 
 
   gsap.ticker.add(_aboutRaf);
   gsap.ticker.lagSmoothing(0);
