@@ -1356,6 +1356,7 @@ function initAboutAnimation() {
 
   const images = [];
   let loaded = 0;
+  img.src = `https://cdn.jsdelivr.net/gh/lhai-ng/portfoliov1-assets@main/about-sequence/about_30.webp`;
 
   for (let i = 1; i <= frameCount; i++) {
     const image = new Image();
@@ -1403,7 +1404,10 @@ function initAboutAnimation() {
           const reverseFrame = frameCount - 1 - frame;
 
           if (images[reverseFrame] && images[reverseFrame].complete) {
-            img.src = images[reverseFrame].src;
+            const newSrc = images[reverseFrame].src;
+            if (img.src !== newSrc) {
+              img.src = newSrc;
+            }
           }
         },
       })
@@ -1554,7 +1558,7 @@ function initAboutAnimation() {
       });
     });
   }
-  
+
   const tl = gsap.timeline({ repeat: -1 });
 
   tl.fromTo(
@@ -1564,13 +1568,17 @@ function initAboutAnimation() {
       clipPath: "inset(0% 0% 0% 0%)",
       duration: 0.8,
       ease: "power4.inOut",
-      delay: .6,
+      delay: 0.6,
     },
-  ).to(".line", {
-    clipPath: "inset(0% 0% 0% 100%)", // biến mất về bên phải
-    duration: 0.8,
-    ease: "power4.inOut",
-  }, "<.6");
+  ).to(
+    ".line",
+    {
+      clipPath: "inset(0% 0% 0% 100%)", // biến mất về bên phải
+      duration: 0.8,
+      ease: "power4.inOut",
+    },
+    "<.6",
+  );
 
   const config = {
     gravity: { x: 0, y: 1 },
@@ -1825,7 +1833,7 @@ function initContactCanvasAnimation() {
     const initialWH = getContactWaveHeight(FILL_EMPTY, BOX_H);
 
     const wave1 = createWave(ctx, {
-      amplitude: 6 * AMPLITUDE_SCALE, 
+      amplitude: 6 * AMPLITUDE_SCALE,
       duration: 1,
       fillStyle: "rgba(2,135,207,0.8)",
       frequency: 2.5,
@@ -1854,7 +1862,7 @@ function initContactCanvasAnimation() {
       segments: 80,
       waveHeight: initialWH,
     });
-    
+
     _contactWaves.push(wave1, wave2, wave3);
 
     gsap.to(wave1, {
@@ -1886,7 +1894,7 @@ function initContactCanvasAnimation() {
       BOX_H,
       resolution,
       waves: [wave1, wave2, wave3],
-      fill: FILL_EMPTY, 
+      fill: FILL_EMPTY,
       fillTween: null,
     };
 
@@ -1919,7 +1927,7 @@ function initContactCanvasAnimation() {
 
         if (state._styleTag && state._inputId) {
           const color = proxy.fill >= 0.9 ? "#e6e6e6" : "#999";
-          state._styleTag.textContent = `#${state._inputId}::placeholder { color: ${color}; transition: color 0.6s ease; }`;
+          state._styleTag.textContent = `#${state._inputId}::placeholder { color: ${color}; -webkit-text-fill-color: ${color}; transition: color 0.6s ease; }`;
         }
       },
       onComplete: () => {
@@ -1931,11 +1939,11 @@ function initContactCanvasAnimation() {
   function animateTextColor(inputEl, color) {
     gsap.to(inputEl, {
       color,
+      webkitTextFillColor: color,
       duration: 2,
       ease: "power2.out",
     });
   }
-
 
   fields.forEach(({ canvasSel, inputSel }) => {
     const canvasState = initContactCanvas(canvasSel);
@@ -1944,10 +1952,10 @@ function initContactCanvasAnimation() {
     const input = document.querySelector(inputSel);
     if (!input) return;
 
-    const uid = 'contact-input-' + Math.random().toString(36).slice(2);
+    const uid = "contact-input-" + Math.random().toString(36).slice(2);
     input.id = uid;
 
-    const styleTag = document.createElement('style');
+    const styleTag = document.createElement("style");
     styleTag.textContent = `#${uid}::placeholder { color: #999; transition: color 1s ease; }`;
     document.head.appendChild(styleTag);
     _contactStyleTags.push(styleTag);
@@ -1975,7 +1983,6 @@ function initContactCanvasAnimation() {
 
 function initContactAnimation() {
   const form = document.querySelector("form");
-  if (form) form.setAttribute("autocomplete", "off");
 
   const timeEl = document.getElementById("vn-time");
   const clockEl = timeEl.querySelector(".clock");
@@ -2362,4 +2369,17 @@ window.addEventListener("load", () => {
       }
     });
   });
+
+  const style = document.createElement("style");
+  style.textContent = `
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active {
+      -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+      box-shadow: 0 0 0 1000px transparent inset !important;
+      transition: background-color 9999s ease-in-out 0s !important;
+    }
+  `;
+  document.head.appendChild(style);
 });
