@@ -1369,15 +1369,12 @@ function initAboutAnimation() {
     };
   }
 
-  _aboutLenis = new Lenis({
-    smoothTouch: false,
-    lerp: 0.1,
-  });
+  _aboutLenis = new Lenis();
 
   _aboutLenis.on("scroll", ScrollTrigger.update);
 
-  _aboutRaf = () => {
-    _aboutLenis.raf(performance.now());
+  _aboutRaf = (time) => {
+    _aboutLenis.raf(time * 1000);
   };
 
   gsap.ticker.add(_aboutRaf);
