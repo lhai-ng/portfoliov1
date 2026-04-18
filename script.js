@@ -1369,20 +1369,20 @@ function initAboutAnimation() {
     };
   }
 
+  _aboutLenis = new Lenis();
+
+  _aboutLenis.on("scroll", ScrollTrigger.update);
+
+  _aboutRaf = (time) => {
+    _aboutLenis.raf(time * 1000);
+  };
+
+  gsap.ticker.add(_aboutRaf);
+  gsap.ticker.lagSmoothing(0);
+
+  const playhead = { frame: 0 };
+
   if (screenWidth > 991) {
-    _aboutLenis = new Lenis();
-
-    _aboutLenis.on("scroll", ScrollTrigger.update);
-
-    _aboutRaf = (time) => {
-      _aboutLenis.raf(time * 1000);
-    };
-
-    gsap.ticker.add(_aboutRaf);
-    gsap.ticker.lagSmoothing(0);
-
-    const playhead = { frame: 0 };
-
     _aboutTimeline = gsap.timeline({
       scrollTrigger: {
         trigger: ".about-container",
