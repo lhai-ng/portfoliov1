@@ -1012,7 +1012,7 @@ function initWorksAnimation() {
       const delta =
         Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
 
-      const scrollVelocity = Math.min(Math.max(delta * 0.2, -20), 20);
+      const scrollVelocity = Math.min(Math.max(delta * 1.2, -80), 80);
 
       targetTranslate = Math.min(
         Math.max(targetTranslate - scrollVelocity, -maxTranslate),
