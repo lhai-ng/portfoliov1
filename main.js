@@ -226,7 +226,7 @@
     scrollTrigger: {
       trigger: ".about-section",
       start: "-500px top",
-      end: screenWidth > 767 ? "none" : "+=150%",
+      end: screenWidth > 767 ? "none" : "150%",
       scrub: 1,
     },
     ease: "none",

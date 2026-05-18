@@ -1143,7 +1143,7 @@ function initWorksAnimation() {
         width:
           screenWidth > 991 ? "400px" : screenWidth > 767 ? "300px" : "220px",
         height:
-          screenWidth > 991 ? "240px" : screenWidth > 767 ? "192px" : "132px",
+          screenWidth > 991 ? "180px" : screenWidth > 767 ? "135px" : "99px",
         top: 0,
         duration: 1,
         ease: "hop",
